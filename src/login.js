@@ -1,36 +1,111 @@
-
-import { useState } from 'react';
-import { useRouter } from 'next/router';
+import { useState } from "react";
+import { useRouter } from "next/router";
 
 export default function Login() {
-  const [form, setForm] = useState({ name: '', usn: '' });
-  const [message, setMessage] = useState('');
+
   const router = useRouter();
 
-  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+  const [form, setForm] = useState({
+    name: "",
+    usn: ""
+  });
 
-  const handleSubmit = async () => {
-    const res = await fetch('http://localhost:5000/login', {
-      method: 'POST',  // Change to POST (your Flask login was GET with JSON body, which is not standard)
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
+  const [message, setMessage] = useState("");
+
+  const handleChange = (e) => {
+
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
     });
-    const data = await res.json();
-    setMessage(data.message);
-    if (res.ok && data.message === 'login successful') {
-      // Save usn to sessionStorage/localStorage for demo, better to use auth in real apps
-      sessionStorage.setItem('usn', form.usn);
-      router.push('/profile');
-    }
+
   };
 
+  async function handleLogin() {
+
+    if (!form.name || !form.usn) {
+
+      setMessage("Please fill all fields.");
+
+      return;
+
+    }
+
+    try {
+
+      const res = await fetch("http://localhost:5000/login", {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify(form)
+
+      });
+
+      const data = await res.json();
+
+      setMessage(data.message);
+
+      if (res.ok && data.message === "login successful") {
+
+        sessionStorage.setItem("usn", form.usn);
+        sessionStorage.setItem("name", form.name);
+
+        router.push("/profile");
+
+      }
+
+    }
+
+    catch (error) {
+
+      console.log(error);
+
+      setMessage("Unable to connect to server.");
+
+    }
+
+  }
+
   return (
-    <div style={{ padding: 20 }}>
+
+    <div style={{ padding: "30px" }}>
+
       <h1>Login</h1>
-      <input name="name" placeholder="Name" onChange={handleChange} />
-      <input name="usn" placeholder="USN" onChange={handleChange} />
-      <button onClick={handleSubmit}>Login</button>
-      <p>{message}</p>
+
+      <input
+        type="text"
+        name="name"
+        placeholder="Enter Name"
+        value={form.name}
+        onChange={handleChange}
+      />
+
+      <br /><br />
+
+      <input
+        type="text"
+        name="usn"
+        placeholder="Enter USN"
+        value={form.usn}
+        onChange={handleChange}
+      />
+
+      <br /><br />
+
+      <button onClick={handleLogin}>
+        Login
+      </button>
+
+      <p style={{ color: "green" }}>
+        {message}
+      </p>
+
     </div>
+
   );
+
 }
