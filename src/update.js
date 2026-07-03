@@ -1,46 +1,145 @@
-
-'use client';
-
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function UpdateProfile() {
+
   const [form, setForm] = useState({
-    role: '',
-    dob: '',
-    gender: '',
-    blood_group: '',
-    location: '',
-    contact: '',
-    usn: '',
+    usn: "",
+    role: "",
+    dob: "",
+    gender: "",
+    blood_group: "",
+    location: "",
+    contact: ""
   });
-  const [message, setMessage] = useState('');
+
+  const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
+
   };
 
-  const handleUpdate = async () => {
-    const res = await fetch('http://localhost:5000/profile_update', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    });
-    const data = await res.json();
-    setMessage(data.message);
-  };
+  async function handleUpdate() {
+
+    if (!form.usn) {
+
+      setMessage("Please enter USN.");
+
+      return;
+
+    }
+
+    try {
+
+      const res = await fetch("http://localhost:5000/profile_update", {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify(form)
+
+      });
+
+      const data = await res.json();
+
+      setMessage(data.message);
+
+    }
+
+    catch (error) {
+
+      console.log(error);
+
+      setMessage("Failed to update profile.");
+
+    }
+
+  }
 
   return (
-    <div className="container">
-      <h2>Update Profile</h2>
-      <input name="role" placeholder="Role" onChange={handleChange} />
-      <input name="dob" placeholder="DOB" onChange={handleChange} />
-      <input name="gender" placeholder="Gender" onChange={handleChange} />
-      <input name="blood_group" placeholder="Blood Group" onChange={handleChange} />
-      <input name="location" placeholder="Location" onChange={handleChange} />
-      <input name="contact" placeholder="Contact" onChange={handleChange} />
-      <input name="usn" placeholder="USN" onChange={handleChange} />
-      <button onClick={handleUpdate}>Update</button>
-      <p className="message">{message}</p>
+
+    <div style={{ padding: "30px" }}>
+
+      <h1>Update Profile</h1>
+
+      <input
+        name="usn"
+        placeholder="USN"
+        value={form.usn}
+        onChange={handleChange}
+      />
+
+      <br /><br />
+
+      <input
+        name="role"
+        placeholder="Role"
+        value={form.role}
+        onChange={handleChange}
+      />
+
+      <br /><br />
+
+      <input
+        type="date"
+        name="dob"
+        value={form.dob}
+        onChange={handleChange}
+      />
+
+      <br /><br />
+
+      <input
+        name="gender"
+        placeholder="Gender"
+        value={form.gender}
+        onChange={handleChange}
+      />
+
+      <br /><br />
+
+      <input
+        name="blood_group"
+        placeholder="Blood Group"
+        value={form.blood_group}
+        onChange={handleChange}
+      />
+
+      <br /><br />
+
+      <input
+        name="location"
+        placeholder="Location"
+        value={form.location}
+        onChange={handleChange}
+      />
+
+      <br /><br />
+
+      <input
+        name="contact"
+        placeholder="Mobile Number"
+        value={form.contact}
+        onChange={handleChange}
+      />
+
+      <br /><br />
+
+      <button onClick={handleUpdate}>
+        Update
+      </button>
+
+      <p style={{ color: "green" }}>{message}</p>
+
     </div>
+
   );
+
 }
